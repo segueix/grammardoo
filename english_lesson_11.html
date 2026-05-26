@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>English Adventure · Lesson 11</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root { --pink: #ff3d7f; --cyan: #14c2c2; --yellow: #ffcf00; --green: #2bd968; --red: #ff4d4d; --ink: #1a1a2e; --cream: #fff5e1; --paper: #ffffff; --shadow: 6px 6px 0 var(--ink); }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { font-family: 'Nunito', sans-serif; background: var(--cream); color: var(--ink); min-height: 100vh; overflow-x: hidden; user-select: none; -webkit-user-select: none; }
+  body { background-image: radial-gradient(circle at 10% 20%, rgba(255,61,127,.1) 0, transparent 40%), radial-gradient(circle at 90% 80%, rgba(20,194,194,.1) 0, transparent 40%); padding-bottom: 120px; }
+  .hud { position: sticky; top: 0; z-index: 50; background: var(--ink); color: var(--cream); padding: 14px 16px; border-bottom: 4px solid var(--yellow); display: flex; align-items: center; gap: 10px; }
+  .hud .lesson-title { font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 16px; letter-spacing: .5px; }
+  .hud .lesson-title span { color: var(--yellow); }
+  .progress-wrap { flex: 1; height: 14px; background: rgba(255,255,255,.15); border-radius: 999px; overflow: hidden; border: 2px solid var(--cream); }
+  .progress-bar { height: 100%; background: linear-gradient(90deg, var(--pink), var(--yellow)); width: 0%; transition: width .5s cubic-bezier(.4,1.6,.6,1); }
+  .xp-badge { background: var(--yellow); color: var(--ink); padding: 6px 12px; border-radius: 999px; font-weight: 800; font-size: 14px; border: 2px solid var(--ink); display: flex; align-items: center; gap: 4px; }
+  .home-btn { background: var(--yellow); color: var(--ink); border: 2px solid var(--cream); width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; text-decoration: none; font-weight: 800; }
+  .stage { max-width: 520px; margin: 0 auto; padding: 20px 16px; }
+  .screen { display: none; animation: pop .4s cubic-bezier(.4,1.6,.6,1); }
+  .screen.active { display: block; }
+  @keyframes pop { from { opacity: 0; transform: translateY(20px) scale(.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  .card { background: var(--paper); border: 3px solid var(--ink); border-radius: 24px; padding: 24px 20px; box-shadow: var(--shadow); margin-bottom: 20px; }
+  .card.pink { background: #ffe4ee; }
+  .card.cyan { background: #d8f7f7; }
+  .card.yellow { background: #fff4c2; }
+  .card.green { background: #d8f7e3; }
+  h1.big { font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 36px; line-height: 1.05; margin-bottom: 8px; }
+  h2 { font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 24px; line-height: 1.1; margin-bottom: 12px; }
+  h3 { font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 18px; margin-bottom: 10px; color: var(--pink); text-transform: uppercase; letter-spacing: 1px; }
+  p { font-size: 16px; line-height: 1.5; margin-bottom: 12px; }
+  .hero-emoji { font-size: 80px; text-align: center; margin: 16px 0; display: block; animation: float 3s ease-in-out infinite; }
+  @keyframes float { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-10px) rotate(3deg); } }
+  .btn { display: inline-flex; align-items: center; justify-content: center; background: var(--pink); color: white; border: 3px solid var(--ink); border-radius: 20px; padding: 16px 28px; font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 20px; cursor: pointer; box-shadow: var(--shadow); transition: transform .1s, box-shadow .1s; text-decoration: none; width: 100%; margin-top: 8px; gap: 8px; }
+  .btn:active { transform: translate(4px, 4px); box-shadow: 2px 2px 0 var(--ink); }
+  .btn.secondary { background: var(--cyan); }
+  .btn.yellow { background: var(--yellow); color: var(--ink); }
+  .btn.disabled { opacity: .4; pointer-events: none; }
+  .example { background: white; border: 3px solid var(--ink); border-radius: 16px; padding: 14px 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; font-size: 16px; box-shadow: 3px 3px 0 var(--ink); }
+  .example .em { font-size: 28px; }
+  .example b { color: var(--pink); font-weight: 800; background: var(--yellow); padding: 0 4px; border-radius: 4px; }
+
+  /* Three big sign cards */
+  .signs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin: 14px 0; }
+  .sign { border: 3px solid var(--ink); border-radius: 14px; padding: 14px 6px; text-align: center; box-shadow: 4px 4px 0 var(--ink); }
+  .sign.pos { background: var(--green); color: white; }
+  .sign.neg { background: var(--red); color: white; }
+  .sign.que { background: var(--cyan); color: white; }
+  .sign .icon { font-size: 36px; }
+  .sign .lbl { font-family: 'Fredoka', sans-serif; font-size: 13px; margin-top: 4px; }
+  .sign .word { background: var(--yellow); color: var(--ink); padding: 2px 8px; border-radius: 5px; margin-top: 6px; font-family: 'Fredoka', sans-serif; font-size: 18px; display: inline-block; font-weight: 700; }
+
+  .formula { background: var(--ink); color: var(--cream); border-radius: 16px; padding: 14px; font-family: 'Fredoka', sans-serif; font-size: 18px; text-align: center; margin: 10px 0; border: 3px solid var(--yellow); line-height: 1.5; }
+  .formula span { color: var(--yellow); font-weight: 700; }
+  .formula .pos { color: var(--green); }
+  .formula .neg { color: var(--red); }
+
+  /* Use with */
+  .use-table { background: white; border: 3px solid var(--ink); border-radius: 14px; padding: 12px; margin: 10px 0; }
+  .use-row { display: flex; justify-content: space-between; padding: 8px 4px; border-bottom: 2px dashed #eee; align-items: center; font-size: 14px; }
+  .use-row:last-child { border: none; }
+  .use-row .cat { font-family: 'Fredoka', sans-serif; font-weight: 700; color: var(--cyan); }
+  .use-row .words { font-size: 13px; color: var(--ink); }
+
+  .question { font-family: 'Fredoka', sans-serif; font-size: 22px; margin-bottom: 16px; line-height: 1.3; text-align: center; }
+  .question .blank { display: inline-block; min-width: 60px; border-bottom: 4px solid var(--pink); color: var(--pink); font-weight: 700; text-align: center; padding: 0 8px; }
+  .question .ctx { display: block; font-size: 14px; opacity: .75; margin-bottom: 8px; font-weight: 700; }
+  .options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+  .options.full { grid-template-columns: 1fr; }
+  .option { background: white; border: 3px solid var(--ink); border-radius: 16px; padding: 18px 8px; font-family: 'Fredoka', sans-serif; font-size: 22px; cursor: pointer; box-shadow: 4px 4px 0 var(--ink); transition: transform .15s; text-align: center; min-height: 60px; display: flex; align-items: center; justify-content: center; }
+  .option:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 var(--ink); }
+  .option.correct { background: var(--green); color: white; animation: bounce .4s; }
+  .option.wrong { background: var(--red); color: white; animation: shake .4s; }
+  @keyframes bounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+  @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+
+  /* Sign-type indicator */
+  .sign-tag { display: inline-block; padding: 4px 10px; border-radius: 999px; font-family: 'Fredoka', sans-serif; font-size: 14px; font-weight: 700; margin: 0 4px; vertical-align: middle; }
+  .sign-tag.pos { background: var(--green); color: white; }
+  .sign-tag.neg { background: var(--red); color: white; }
+  .sign-tag.que { background: var(--cyan); color: white; }
+
+  .builder-target { min-height: 70px; background: var(--cream); border: 3px dashed var(--ink); border-radius: 16px; padding: 10px; margin-bottom: 16px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; }
+  .word-pile { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 12px; }
+  .word-chip { background: white; border: 3px solid var(--ink); border-radius: 12px; padding: 10px 16px; font-family: 'Fredoka', sans-serif; font-size: 18px; cursor: pointer; box-shadow: 3px 3px 0 var(--ink); transition: transform .1s; }
+  .word-chip:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+  .word-chip.used { opacity: .3; pointer-events: none; }
+  .word-chip.placed { background: var(--yellow); }
+
+  .feedback { background: var(--yellow); border: 3px solid var(--ink); border-radius: 16px; padding: 14px; margin-top: 14px; font-weight: 700; text-align: center; box-shadow: 3px 3px 0 var(--ink); display: none; }
+  .feedback.show { display: block; animation: pop .3s; }
+  .feedback.correct { background: var(--green); color: white; }
+  .feedback.wrong { background: var(--red); color: white; }
+  .step-tag { display: inline-block; background: var(--ink); color: var(--yellow); padding: 4px 12px; border-radius: 999px; font-family: 'Fredoka', sans-serif; font-size: 14px; margin-bottom: 12px; letter-spacing: 1px; }
+  .certificate { background: linear-gradient(135deg, #fff8dc 0%, #ffeaa7 100%); border: 5px solid var(--ink); border-radius: 20px; padding: 30px 24px; text-align: center; box-shadow: 8px 8px 0 var(--pink); position: relative; overflow: hidden; }
+  .certificate::before { content: ''; position: absolute; inset: 10px; border: 2px dashed var(--ink); border-radius: 14px; pointer-events: none; }
+  .cert-seal { font-size: 60px; margin: 8px 0; animation: spin 8s linear infinite; display: inline-block; }
+  @keyframes spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+  .cert-title { font-family: 'Fredoka', sans-serif; font-size: 28px; color: var(--pink); margin-bottom: 8px; }
+  .cert-sub { font-size: 14px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 14px; }
+  .cert-name { font-family: 'Fredoka', sans-serif; font-size: 32px; color: var(--ink); border-bottom: 3px solid var(--ink); padding: 8px; margin: 14px 20px; word-break: break-word; }
+  .cert-body { font-size: 15px; line-height: 1.5; }
+  .cert-stamp { margin-top: 16px; display: flex; justify-content: space-around; font-size: 12px; text-transform: uppercase; }
+  .cert-stamp div b { display: block; font-family: 'Fredoka', sans-serif; font-size: 14px; color: var(--pink); }
+  input[type="text"] { width: 100%; border: 3px solid var(--ink); border-radius: 14px; padding: 14px; font-family: 'Fredoka', sans-serif; font-size: 20px; text-align: center; background: white; box-shadow: 3px 3px 0 var(--ink); outline: none; }
+  input[type="text"]:focus { border-color: var(--pink); }
+  .confetti { position: fixed; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 100; overflow: hidden; }
+  .confetti span { position: absolute; width: 12px; height: 12px; top: -20px; animation: fall 2.5s linear forwards; }
+  @keyframes fall { to { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
+  .lives { display: flex; gap: 4px; }
+  .heart { font-size: 20px; transition: opacity .3s; }
+  .heart.lost { opacity: .2; }
+  .stars { display: flex; justify-content: center; gap: 6px; font-size: 32px; margin: 10px 0; }
+  .star { color: #ddd; }
+  .star.on { color: var(--yellow); animation: pop .4s; }
+  @media (min-width: 600px) { h1.big { font-size: 44px; } .question { font-size: 26px; } }
+</style>
+</head>
+<body>
+
+<div class="hud">
+  <a href="index.html" class="home-btn" aria-label="Home">🏠</a>
+  <div class="lesson-title">📘 LESSON <span>11</span></div>
+  <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+  <div class="xp-badge">⭐ <span id="xpCount">0</span></div>
+</div>
+
+<div class="stage">
+
+<section class="screen active" id="screen-1">
+  <div class="card pink">
+    <span class="hero-emoji">🛒</span>
+    <h1 class="big">Some &amp; Any<br>— the duo!</h1>
+    <p style="font-size: 17px;">Need an apple? Got any milk? Today you'll learn the two magic words to talk about <b>"a few of something"</b> in English.</p>
+  </div>
+  <div class="card cyan">
+    <h3>🎯 Your Mission</h3>
+    <p>✅ Learn when to use <b>SOME</b></p>
+    <p>✅ Learn when to use <b>ANY</b></p>
+    <p>✅ Master the polite-question exception</p>
+    <p>✅ Pass the test &amp; earn your trophy 🏆</p>
+  </div>
+  <button class="btn" onclick="goTo(2)">LET'S GO! 🎮</button>
+</section>
+
+<section class="screen" id="screen-2">
+  <span class="step-tag">STEP 1 OF 7 · LEARN</span>
+  <div class="card">
+    <h2>The Simple Rule 🎯</h2>
+    <p>Three signs to remember — they tell you which word to use:</p>
+    <div class="signs">
+      <div class="sign pos">
+        <div class="icon">✅</div>
+        <div class="lbl">YES sentence</div>
+        <div class="word">some</div>
+      </div>
+      <div class="sign neg">
+        <div class="icon">❌</div>
+        <div class="lbl">NO sentence</div>
+        <div class="word">any</div>
+      </div>
+      <div class="sign que">
+        <div class="icon">❓</div>
+        <div class="lbl">QUESTION</div>
+        <div class="word">any</div>
+      </div>
+    </div>
+    <p style="text-align:center; font-weight:800; color:var(--pink);">🔑 Positive → some · Negative &amp; questions → any</p>
+  </div>
+
+  <div class="card yellow">
+    <h3>👀 See them in action</h3>
+    <div class="example"><span class="em">🍎</span><span><span class="sign-tag pos">✅</span> I have <b>some</b> apples.</span></div>
+    <div class="example"><span class="em">🍎</span><span><span class="sign-tag neg">❌</span> I don't have <b>any</b> apples.</span></div>
+    <div class="example"><span class="em">🍎</span><span><span class="sign-tag que">❓</span> Do you have <b>any</b> apples?</span></div>
+    <div class="example"><span class="em">🥛</span><span><span class="sign-tag pos">✅</span> There is <b>some</b> milk.</span></div>
+    <div class="example"><span class="em">🥛</span><span><span class="sign-tag neg">❌</span> There isn't <b>any</b> sugar.</span></div>
+  </div>
+
+  <button class="btn" onclick="goTo(3)">MORE TO LEARN ➡️</button>
+</section>
+
+<section class="screen" id="screen-3">
+  <span class="step-tag">STEP 2 OF 7 · LEARN</span>
+  <div class="card cyan">
+    <h2>The Formula ✨</h2>
+    <div class="formula">
+      <span class="pos">✅</span> ___ + <span>some</span> + noun<br>
+      <span class="neg">❌</span> ___ + not + <span>any</span> + noun<br>
+      ❓ ___ <span>any</span> + noun ?
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>What kind of nouns?</h3>
+    <p style="font-size: 14px;">Use some/any with words you can't count exactly (lots of something) or with plurals:</p>
+    <div class="use-table">
+      <div class="use-row">
+        <span class="cat">Plural (count)</span>
+        <span class="words">apples, books, friends, cars</span>
+      </div>
+      <div class="use-row">
+        <span class="cat">Uncountable</span>
+        <span class="words">water, milk, money, bread, sugar</span>
+      </div>
+    </div>
+    <p style="font-size: 13px; opacity: .8;">🚫 Don't use some/any with a single thing → use <b>a/an</b>: "I have <b>a</b> book", not "I have some book".</p>
+  </div>
+
+  <div class="card pink">
+    <h3>🎁 Polite exception!</h3>
+    <p style="font-size: 14px;">Use <b>some</b> in questions when you're <b>offering</b> or <b>asking nicely</b>:</p>
+    <div class="example"><span class="em">☕</span><span>Would you like <b>some</b> tea?<br><small style="opacity:.7">(offer)</small></span></div>
+    <div class="example"><span class="em">💧</span><span>Can I have <b>some</b> water, please?<br><small style="opacity:.7">(polite request)</small></span></div>
+  </div>
+
+  <button class="btn" onclick="goTo(4)">READY TO PLAY! 🎮</button>
+</section>
+
+<section class="screen" id="screen-4">
+  <span class="step-tag">STEP 3 OF 7 · GAME 1</span>
+  <div class="card pink">
+    <h2>🎯 Some or Any?</h2>
+    <p style="font-size: 14px;">Look at the sign (✅ ❌ ❓) and pick the right word. Score 4/5 to pass!</p>
+  </div>
+  <div class="card" id="game1Card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <span style="font-weight:800;">Question <span id="g1qNum">1</span>/5</span>
+      <div class="lives" id="g1Lives"><span class="heart">❤️</span><span class="heart">❤️</span><span class="heart">❤️</span></div>
+    </div>
+    <div class="question" id="g1Question"></div>
+    <div class="options" id="g1Options"></div>
+    <div class="feedback" id="g1Feedback"></div>
+  </div>
+  <button class="btn disabled" id="g1Next" onclick="g1Next()">NEXT ➡️</button>
+</section>
+
+<section class="screen" id="screen-5">
+  <span class="step-tag">STEP 4 OF 7 · GAME 2</span>
+  <div class="card yellow">
+    <h2>🧪 Real life sentences!</h2>
+    <p style="font-size: 15px;">Trickier sentences mixing positive, negative, questions and polite offers!</p>
+  </div>
+  <div class="card" id="game2Card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <span style="font-weight:800;">Question <span id="g2qNum">1</span>/5</span>
+      <div class="lives" id="g2Lives"><span class="heart">❤️</span><span class="heart">❤️</span><span class="heart">❤️</span></div>
+    </div>
+    <div class="question" id="g2Question"></div>
+    <div class="options" id="g2Options"></div>
+    <div class="feedback" id="g2Feedback"></div>
+  </div>
+  <button class="btn disabled" id="g2Next" onclick="g2Next()">NEXT ➡️</button>
+</section>
+
+<section class="screen" id="screen-6">
+  <span class="step-tag">STEP 5 OF 7 · GAME 3</span>
+  <div class="card green">
+    <h2>🧩 Build the sentence!</h2>
+    <p style="font-size: 14px;">Tap the words in the right order. Tap a placed word to remove it.</p>
+  </div>
+  <div class="card" id="game3Card">
+    <div style="font-weight:800; margin-bottom:8px;">Sentence <span id="g3qNum">1</span>/3 · Make: <em id="g3Hint" style="color:var(--pink);"></em></div>
+    <div class="builder-target" id="g3Target"></div>
+    <div class="word-pile" id="g3Pile"></div>
+    <div class="feedback" id="g3Feedback"></div>
+    <button class="btn yellow" id="g3Check" onclick="g3Check()">CHECK ✅</button>
+  </div>
+  <button class="btn disabled" id="g3Next" onclick="g3Next()">NEXT ➡️</button>
+</section>
+
+<section class="screen" id="screen-7">
+  <span class="step-tag">STEP 6 OF 7 · FINAL TEST</span>
+  <div class="card pink">
+    <h2>🏆 The Big Test!</h2>
+    <p>5 mixed questions. Get <b>4 or more correct</b> to earn your certificate!</p>
+  </div>
+  <div class="card" id="finalCard" style="display:none;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <span style="font-weight:800;">Question <span id="fqNum">1</span>/5</span>
+      <span style="font-weight:800;">Score: <span id="fScore">0</span></span>
+    </div>
+    <div class="question" id="fQuestion"></div>
+    <div class="options" id="fOptions"></div>
+    <div class="feedback" id="fFeedback"></div>
+  </div>
+  <button class="btn yellow" id="startFinal" onclick="startFinal()">START THE TEST 🎯</button>
+  <button class="btn disabled" id="fNext" style="display:none;" onclick="fNext()">NEXT ➡️</button>
+</section>
+
+<section class="screen" id="screen-8">
+  <div class="card yellow" id="resultCard">
+    <span class="hero-emoji" id="resultEmoji">🎉</span>
+    <h1 class="big" id="resultTitle">You did it!</h1>
+    <p id="resultText"></p>
+    <div class="stars" id="resultStars"><span class="star">⭐</span><span class="star">⭐</span><span class="star">⭐</span><span class="star">⭐</span><span class="star">⭐</span></div>
+  </div>
+  <div class="card" id="passedCard" style="display:none;">
+    <h2>🎓 Get your certificate!</h2>
+    <p>Type your name to print it:</p>
+    <input type="text" id="studentName" placeholder="Your name here..." autocomplete="off" maxlength="30">
+    <button class="btn" style="margin-top:12px;" onclick="showCert()">GET CERTIFICATE 🏅</button>
+  </div>
+  <div class="card" id="failedCard" style="display:none;">
+    <h3 style="color:var(--ink)">Almost there!</h3>
+    <p>You need 4 correct answers. Remember: ✅ some · ❌ any · ❓ any · 🎁 some!</p>
+    <button class="btn secondary" onclick="restartFinal()">TRY AGAIN 🔄</button>
+    <button class="btn yellow" onclick="backToHome()">🏠 BACK TO HOME</button>
+  </div>
+</section>
+
+<section class="screen" id="screen-9">
+  <div class="certificate" id="certBox">
+    <div class="cert-seal">🏅</div>
+    <div class="cert-sub">Official Certificate</div>
+    <div class="cert-title">English Adventure</div>
+    <div class="cert-sub">— Lesson 11 Champion —</div>
+    <div class="cert-name" id="certName">Student</div>
+    <div class="cert-body">
+      has mastered<br>
+      <b>SOME &amp; ANY</b><br>
+      and can talk about quantities like a pro!
+    </div>
+    <div class="cert-stamp">
+      <div><b id="certScore">5/5</b>SCORE</div>
+      <div><b id="certXP">200</b>XP EARNED</div>
+      <div><b id="certDate">—</b>DATE</div>
+    </div>
+  </div>
+  <button class="btn" style="margin-top:16px;" onclick="window.print()">🖨️ SAVE / PRINT</button>
+  <button class="btn yellow" onclick="backToHome()">🏠 BACK TO HOME</button>
+  <button class="btn secondary" onclick="restartAll()">🔄 PLAY AGAIN</button>
+</section>
+
+</div>
+
+<div class="confetti" id="confetti"></div>
+
+<script>
+let xp = 0, progress = 0;
+const TOTAL_STEPS = 9;
+function setProgress(step) { progress = step; document.getElementById('progressBar').style.width = (step / TOTAL_STEPS * 100) + '%'; }
+function addXP(amount) {
+  xp += amount;
+  document.getElementById('xpCount').textContent = xp;
+  document.querySelector('.xp-badge').animate([{ transform: 'scale(1)' }, { transform: 'scale(1.3)' }, { transform: 'scale(1)' }], { duration: 400 });
+}
+function goTo(n) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + n).classList.add('active');
+  setProgress(n);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (n === 4) initGame1();
+  if (n === 5) initGame2();
+  if (n === 6) initGame3();
+}
+function confetti() {
+  const colors = ['#ff3d7f','#14c2c2','#ffcf00','#2bd968','#ff4d4d'];
+  const wrap = document.getElementById('confetti'); wrap.innerHTML = '';
+  for (let i = 0; i < 50; i++) {
+    const s = document.createElement('span');
+    s.style.left = Math.random() * 100 + '%';
+    s.style.background = colors[Math.floor(Math.random() * colors.length)];
+    s.style.animationDelay = (Math.random() * 0.5) + 's';
+    s.style.animationDuration = (1.5 + Math.random() * 1.5) + 's';
+    s.style.borderRadius = Math.random() > .5 ? '50%' : '2px';
+    wrap.appendChild(s);
+  }
+  setTimeout(() => wrap.innerHTML = '', 3000);
+}
+
+/* GAME 1: some or any (basic) */
+const g1Questions = [
+  { tag: 'pos', sentence: 'I have ___ friends in this city.', options: ['some','any'], answer: 'some', tip: '✅ Positive sentence → some!' },
+  { tag: 'que', sentence: 'Do you have ___ pets?', options: ['some','any'], answer: 'any', tip: '❓ Question → any!' },
+  { tag: 'neg', sentence: "There isn't ___ milk in the fridge.", options: ['some','any'], answer: 'any', tip: '❌ Negative → any!' },
+  { tag: 'pos', sentence: 'I bought ___ apples at the shop.', options: ['some','any'], answer: 'some', tip: '✅ Positive → some!' },
+  { tag: 'que', sentence: 'Is there ___ bread on the table?', options: ['some','any'], answer: 'any', tip: '❓ Question → any!' }
+];
+let g1Index = 0, g1Correct = 0, g1Lives = 3, g1Answered = false;
+function initGame1() { g1Index = 0; g1Correct = 0; g1Lives = 3; g1Answered = false; renderG1(); }
+function renderG1() {
+  g1Answered = false;
+  const q = g1Questions[g1Index];
+  document.getElementById('g1qNum').textContent = g1Index + 1;
+  const tagHtml = '<span class="sign-tag ' + q.tag + '">' + (q.tag === 'pos' ? '✅' : q.tag === 'neg' ? '❌' : '❓') + '</span> ';
+  document.getElementById('g1Question').innerHTML = tagHtml + q.sentence.replace('___', '<span class="blank">?</span>');
+  const opts = document.getElementById('g1Options');
+  opts.innerHTML = '';
+  q.options.forEach(opt => {
+    const b = document.createElement('div'); b.className = 'option'; b.textContent = opt;
+    b.onclick = () => answerG1(b, opt, q.answer, q.tip);
+    opts.appendChild(b);
+  });
+  document.getElementById('g1Feedback').className = 'feedback';
+  document.getElementById('g1Next').classList.add('disabled');
+}
+function answerG1(el, picked, correct, tip) {
+  if (g1Answered) return; g1Answered = true;
+  const fb = document.getElementById('g1Feedback');
+  if (picked === correct) {
+    el.classList.add('correct');
+    fb.textContent = '✅ Correct! ' + tip + ' +10 XP';
+    fb.className = 'feedback correct show';
+    g1Correct++; addXP(10);
+  } else {
+    el.classList.add('wrong');
+    document.querySelectorAll('#g1Options .option').forEach(o => { if (o.textContent === correct) o.classList.add('correct'); });
+    fb.textContent = '❌ It\'s "' + correct + '". ' + tip;
+    fb.className = 'feedback wrong show';
+    g1Lives--;
+    document.querySelectorAll('#g1Lives .heart')[g1Lives]?.classList.add('lost');
+  }
+  document.getElementById('g1Next').classList.remove('disabled');
+  document.getElementById('g1Next').textContent = (g1Index === g1Questions.length - 1) ? 'NEXT GAME ➡️' : 'NEXT ➡️';
+}
+function g1Next() {
+  g1Index++;
+  if (g1Index >= g1Questions.length) {
+    if (g1Correct >= 4) { confetti(); addXP(20); }
+    goTo(5);
+  } else renderG1();
+}
+
+/* GAME 2: tricky real life — includes polite offer exception */
+const g2Questions = [
+  { ctx: '🎁 Polite offer at a friend\'s house', sentence: 'Would you like ___ tea?', options: ['some','any'], answer: 'some', tip: 'Polite offer → some!' },
+  { ctx: '🛒 At the shop', sentence: 'I need ___ sugar for the cake.', options: ['some','any'], answer: 'some', tip: '✅ Positive need → some!' },
+  { ctx: '🚫 Empty fridge', sentence: "We don't have ___ eggs.", options: ['some','any'], answer: 'any', tip: '❌ Negative → any!' },
+  { ctx: '❓ Asking your dad', sentence: 'Are there ___ biscuits left?', options: ['some','any'], answer: 'any', tip: '❓ Question → any!' },
+  { ctx: '🥤 Polite request to a waiter', sentence: 'Can I have ___ water, please?', options: ['some','any'], answer: 'some', tip: 'Polite request → some!' }
+];
+let g2Index = 0, g2Correct = 0, g2Lives = 3, g2Answered = false;
+function initGame2() { g2Index = 0; g2Correct = 0; g2Lives = 3; g2Answered = false; renderG2(); }
+function renderG2() {
+  g2Answered = false;
+  const q = g2Questions[g2Index];
+  document.getElementById('g2qNum').textContent = g2Index + 1;
+  document.getElementById('g2Question').innerHTML = '<span class="ctx">' + q.ctx + '</span>' + q.sentence.replace('___', '<span class="blank">?</span>');
+  const opts = document.getElementById('g2Options');
+  opts.innerHTML = '';
+  q.options.forEach(opt => {
+    const b = document.createElement('div'); b.className = 'option'; b.textContent = opt;
+    b.onclick = () => answerG2(b, opt, q.answer, q.tip);
+    opts.appendChild(b);
+  });
+  document.getElementById('g2Feedback').className = 'feedback';
+  document.getElementById('g2Next').classList.add('disabled');
+}
+function answerG2(el, picked, correct, tip) {
+  if (g2Answered) return; g2Answered = true;
+  const fb = document.getElementById('g2Feedback');
+  if (picked === correct) {
+    el.classList.add('correct');
+    fb.textContent = '✅ Yes! ' + tip + ' +10 XP';
+    fb.className = 'feedback correct show';
+    g2Correct++; addXP(10);
+  } else {
+    el.classList.add('wrong');
+    document.querySelectorAll('#g2Options .option').forEach(o => { if (o.textContent === correct) o.classList.add('correct'); });
+    fb.textContent = '❌ It\'s "' + correct + '". ' + tip;
+    fb.className = 'feedback wrong show';
+    g2Lives--;
+    document.querySelectorAll('#g2Lives .heart')[g2Lives]?.classList.add('lost');
+  }
+  document.getElementById('g2Next').classList.remove('disabled');
+  document.getElementById('g2Next').textContent = (g2Index === g2Questions.length - 1) ? 'NEXT GAME ➡️' : 'NEXT ➡️';
+}
+function g2Next() {
+  g2Index++;
+  if (g2Index >= g2Questions.length) {
+    if (g2Correct >= 4) { confetti(); addXP(20); }
+    goTo(6);
+  } else renderG2();
+}
+
+/* GAME 3: sentence builder */
+const g3Sentences = [
+  { hint: '📚 I have some books at home', words: ['some','at','I','home','books','have'], correct: ['I','have','some','books','at','home'] },
+  { hint: '👭 Do you have any sisters?', words: ['sisters','Do','have','any','you'], correct: ['Do','you','have','any','sisters'] },
+  { hint: "🥛 There isn't any milk", words: ['milk','any',"isn't",'There'], correct: ['There',"isn't",'any','milk'] }
+];
+let g3Index = 0, g3Correct = 0, g3Placed = [];
+function initGame3() { g3Index = 0; g3Correct = 0; renderG3(); }
+function renderG3() {
+  const q = g3Sentences[g3Index];
+  g3Placed = [];
+  document.getElementById('g3qNum').textContent = g3Index + 1;
+  document.getElementById('g3Hint').textContent = q.hint;
+  document.getElementById('g3Target').innerHTML = '<span style="color:#999; font-size:14px;">Tap words below ⬇️</span>';
+  const pile = document.getElementById('g3Pile');
+  pile.innerHTML = '';
+  [...q.words].sort(() => Math.random() - 0.5).forEach((w, i) => {
+    const chip = document.createElement('div');
+    chip.className = 'word-chip'; chip.textContent = w; chip.dataset.idx = i;
+    chip.onclick = () => placeWord(chip, w);
+    pile.appendChild(chip);
+  });
+  document.getElementById('g3Feedback').className = 'feedback';
+  document.getElementById('g3Check').classList.remove('disabled');
+  document.getElementById('g3Next').classList.add('disabled');
+}
+function placeWord(chip, word) {
+  if (chip.classList.contains('used')) return;
+  chip.classList.add('used');
+  const target = document.getElementById('g3Target');
+  if (g3Placed.length === 0) target.innerHTML = '';
+  const placed = document.createElement('div');
+  placed.className = 'word-chip placed'; placed.textContent = word;
+  placed.onclick = () => {
+    placed.remove(); chip.classList.remove('used');
+    g3Placed = g3Placed.filter(p => p.el !== placed);
+    if (g3Placed.length === 0) target.innerHTML = '<span style="color:#999; font-size:14px;">Tap words below ⬇️</span>';
+  };
+  target.appendChild(placed);
+  g3Placed.push({ word, el: placed });
+}
+function g3Check() {
+  const q = g3Sentences[g3Index];
+  const fb = document.getElementById('g3Feedback');
+  const userOrder = g3Placed.map(p => p.word);
+  if (userOrder.length !== q.correct.length) { fb.textContent = '⚠️ Use ALL the words!'; fb.className = 'feedback wrong show'; return; }
+  if (userOrder.every((w, i) => w === q.correct[i])) {
+    fb.textContent = '✅ Perfect! +15 XP';
+    fb.className = 'feedback correct show';
+    g3Correct++; addXP(15);
+    document.getElementById('g3Check').classList.add('disabled');
+    document.getElementById('g3Next').classList.remove('disabled');
+    document.getElementById('g3Next').textContent = (g3Index === g3Sentences.length - 1) ? 'FINAL TEST ➡️' : 'NEXT ➡️';
+  } else {
+    fb.innerHTML = '❌ Not quite. Try again!<br>Hint: ' + q.correct.join(' ');
+    fb.className = 'feedback wrong show';
+  }
+}
+function g3Next() {
+  g3Index++;
+  if (g3Index >= g3Sentences.length) {
+    if (g3Correct >= 2) { confetti(); addXP(20); }
+    goTo(7);
+  } else renderG3();
+}
+
+/* FINAL TEST */
+const finalQuestions = [
+  { q: 'I want ___ chocolate, please.', options: ['some','any','a','an'], answer: 'some' },
+  { q: 'Are there ___ messages for me?', options: ['some','any','a','no'], answer: 'any' },
+  { q: "We don't have ___ time.", options: ['some','any','a','the'], answer: 'any' },
+  { q: 'Would you like ___ pizza?', options: ['some','any','a','an'], answer: 'some' },
+  { q: 'There are ___ children in the garden.', options: ['some','any','a','an'], answer: 'some' }
+];
+let fIndex = 0, fScore = 0, fAnswered = false;
+function startFinal() {
+  fIndex = 0; fScore = 0;
+  document.getElementById('startFinal').style.display = 'none';
+  document.getElementById('finalCard').style.display = 'block';
+  document.getElementById('fNext').style.display = 'flex';
+  renderFinal();
+}
+function renderFinal() {
+  fAnswered = false;
+  const q = finalQuestions[fIndex];
+  document.getElementById('fqNum').textContent = fIndex + 1;
+  document.getElementById('fScore').textContent = fScore;
+  document.getElementById('fQuestion').innerHTML = q.q.replace(/___/g, '<span class="blank">?</span>');
+  const opts = document.getElementById('fOptions');
+  opts.innerHTML = '';
+  opts.className = q.options.length > 3 ? 'options' : 'options full';
+  q.options.forEach(opt => {
+    const b = document.createElement('div');
+    b.className = 'option';
+    b.style.fontSize = opt.length > 14 ? '15px' : '20px';
+    b.textContent = opt;
+    b.onclick = () => answerFinal(b, opt, q.answer);
+    opts.appendChild(b);
+  });
+  document.getElementById('fFeedback').className = 'feedback';
+  document.getElementById('fNext').classList.add('disabled');
+}
+function answerFinal(el, picked, correct) {
+  if (fAnswered) return; fAnswered = true;
+  const fb = document.getElementById('fFeedback');
+  if (picked === correct) {
+    el.classList.add('correct');
+    fb.textContent = '✅ Correct! +20 XP';
+    fb.className = 'feedback correct show';
+    fScore++; addXP(20);
+    document.getElementById('fScore').textContent = fScore;
+  } else {
+    el.classList.add('wrong');
+    document.querySelectorAll('#fOptions .option').forEach(o => { if (o.textContent === correct) o.classList.add('correct'); });
+    fb.textContent = '❌ The correct answer is: "' + correct + '"';
+    fb.className = 'feedback wrong show';
+  }
+  document.getElementById('fNext').classList.remove('disabled');
+  document.getElementById('fNext').textContent = (fIndex === finalQuestions.length - 1) ? 'SEE MY RESULT 🏆' : 'NEXT ➡️';
+}
+function fNext() { fIndex++; if (fIndex >= finalQuestions.length) showResult(); else renderFinal(); }
+function showResult() {
+  goTo(8);
+  document.getElementById('resultText').innerHTML = 'You scored <b>' + fScore + '/5</b> on the final test.<br>Total XP earned: <b>' + xp + '</b>';
+  document.querySelectorAll('#resultStars .star').forEach((s, i) => { if (i < fScore) setTimeout(() => s.classList.add('on'), i * 200); });
+  if (fScore >= 4) {
+    document.getElementById('resultEmoji').textContent = '🎉';
+    document.getElementById('resultTitle').textContent = 'You did it!';
+    document.getElementById('passedCard').style.display = 'block';
+    document.getElementById('failedCard').style.display = 'none';
+    confetti(); setTimeout(confetti, 800);
+  } else {
+    document.getElementById('resultEmoji').textContent = '💪';
+    document.getElementById('resultTitle').textContent = 'Almost!';
+    document.getElementById('passedCard').style.display = 'none';
+    document.getElementById('failedCard').style.display = 'block';
+  }
+  saveLessonProgress(fScore >= 4);
+}
+function restartFinal() {
+  document.getElementById('startFinal').style.display = 'flex';
+  document.getElementById('finalCard').style.display = 'none';
+  document.getElementById('fNext').style.display = 'none';
+  goTo(7);
+}
+function showCert() {
+  const name = document.getElementById('studentName').value.trim() || 'Champion';
+  document.getElementById('certName').textContent = name;
+  document.getElementById('certScore').textContent = fScore + '/5';
+  document.getElementById('certXP').textContent = xp;
+  document.getElementById('certDate').textContent = new Date().toLocaleDateString('en-GB');
+  goTo(9); confetti(); saveStudentName(name);
+}
+function backToHome() { window.location.href = 'index.html'; }
+function restartAll() {
+  xp = 0;
+  document.getElementById('xpCount').textContent = '0';
+  document.querySelectorAll('.heart').forEach(h => h.classList.remove('lost'));
+  document.querySelectorAll('.star').forEach(s => s.classList.remove('on'));
+  document.getElementById('startFinal').style.display = 'flex';
+  document.getElementById('finalCard').style.display = 'none';
+  document.getElementById('fNext').style.display = 'none';
+  document.getElementById('passedCard').style.display = 'none';
+  document.getElementById('failedCard').style.display = 'none';
+  goTo(1);
+}
+
+const LESSON_ID = '11';
+const LESSON_MAX = 5;
+function saveLessonProgress(passed) {
+  try {
+    const KEY = 'englishAdventure_v1';
+    const data = JSON.parse(localStorage.getItem(KEY) || '{}');
+    if (!data.lessons) data.lessons = {};
+    if (!data.student) data.student = { name: '', createdAt: new Date().toISOString() };
+    if (!data.streak) data.streak = { current: 0, best: 0, lastDate: null };
+    if (typeof data.totalXP !== 'number') data.totalXP = 0;
+    if (!data.achievements) data.achievements = [];
+    const prev = data.lessons[LESSON_ID] || { attempts: 0, bestScore: 0, bestXP: 0, completed: false };
+    const justCompleted = passed && !prev.completed;
+    data.lessons[LESSON_ID] = {
+      completed: prev.completed || passed,
+      bestScore: Math.max(prev.bestScore || 0, fScore),
+      maxScore: LESSON_MAX, lastScore: fScore,
+      bestXP: Math.max(prev.bestXP || 0, xp), lastXP: xp,
+      stars: Math.max(prev.stars || 0, fScore),
+      attempts: (prev.attempts || 0) + 1,
+      completedAt: (prev.completed ? prev.completedAt : (passed ? new Date().toISOString() : prev.completedAt))
+    };
+    const xpDelta = Math.max(0, xp - (prev.bestXP || 0));
+    data.totalXP += xpDelta;
+    if (justCompleted) {
+      const today = new Date(); today.setHours(0,0,0,0);
+      const todayStr = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
+      if (data.streak.lastDate) {
+        const last = new Date(data.streak.lastDate + 'T00:00:00');
+        const d = Math.round((today - last) / 86400000);
+        if (d === 0) {} else if (d === 1) data.streak.current = (data.streak.current || 0) + 1;
+        else data.streak.current = 1;
+      } else data.streak.current = 1;
+      data.streak.lastDate = todayStr;
+      if (data.streak.current > (data.streak.best || 0)) data.streak.best = data.streak.current;
+    }
+    localStorage.setItem(KEY, JSON.stringify(data));
+  } catch (e) { console.warn(e); }
+}
+function saveStudentName(name) {
+  try {
+    const KEY = 'englishAdventure_v1';
+    const data = JSON.parse(localStorage.getItem(KEY) || '{}');
+    if (!data.student) data.student = { createdAt: new Date().toISOString() };
+    if (!data.student.name && name) data.student.name = name;
+    if (!data.lessons) data.lessons = {};
+    if (data.lessons[LESSON_ID]) data.lessons[LESSON_ID].studentName = name;
+    localStorage.setItem(KEY, JSON.stringify(data));
+  } catch (e) {}
+}
+
+setProgress(1);
+</script>
+</body>
+</html>
