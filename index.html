@@ -669,30 +669,43 @@ const STORAGE_KEY = 'englishAdventure_v1';
    Lessons unlock progressively: a lesson is locked until the previous one
    is completed (or set requirePrevious:false to always unlock).
 */
-const LESSONS = [
-  {
-    id: '01',
-    file: 'english_lesson_1.html',
-    topic: 'Present Continuous',
-    sub: 'What is happening right now',
-    desc: "Learn to talk about actions happening at this exact moment. Play 3 mini-games, pass the test, earn your certificate!",
-    available: true
-  },
-  { id: '02', topic: 'Present Simple', sub: 'Things you do every day', desc: "Routines, habits and facts. Coming soon!", available: false },
-  { id: '03', topic: 'Simple vs Continuous', sub: 'When to use which', desc: "Master the difference. Coming soon!", available: false },
-  { id: '04', topic: 'Past Simple', sub: 'Talking about yesterday', desc: "Regular and irregular verbs in the past.", available: false },
-  { id: '05', topic: 'Past Continuous', sub: 'I was doing...', desc: "Actions in progress in the past.", available: false },
-  { id: '06', topic: 'Future: Will & Going to', sub: 'Plans and predictions', desc: "Two ways to talk about tomorrow.", available: false },
-  { id: '07', topic: 'Present Perfect', sub: 'Have you ever...?', desc: "Connect the past with now.", available: false },
-  { id: '08', topic: 'Articles: a / an / the', sub: 'Tiny words, big rules', desc: "When to use each one.", available: false },
-  { id: '09', topic: 'Comparatives', sub: 'Bigger, faster, better', desc: "Compare two things.", available: false },
-  { id: '10', topic: 'Superlatives', sub: 'The biggest, the best', desc: "The top of the top.", available: false },
-  { id: '11', topic: 'Some / Any', sub: 'How much, how many', desc: "Countable and uncountable.", available: false },
-  { id: '12', topic: 'Can / Could / Would', sub: 'Ability and politeness', desc: "Modal verbs basics.", available: false },
-  { id: '13', topic: 'Prepositions', sub: 'In, on, at, to...', desc: "Time and place little words.", available: false },
-  { id: '14', topic: 'Question Words', sub: 'Who, what, where, why', desc: "Asking the right questions.", available: false },
-  { id: '15', topic: 'Final Challenge', sub: 'Boss level', desc: "Mix everything you've learned!", available: false }
+const LESSON_CATALOG = [
+  { id: '01', topic: 'Present Continuous', sub: 'What is happening right now', desc: "Learn to talk about actions happening at this exact moment. Play 3 mini-games, pass the test, earn your certificate!" },
+  { id: '02', topic: 'Present Simple', sub: 'Things you do every day', desc: "Routines, habits and facts." },
+  { id: '03', topic: 'Simple vs Continuous', sub: 'When to use which', desc: "Master the difference." },
+  { id: '04', topic: 'Past Simple', sub: 'Talking about yesterday', desc: "Regular and irregular verbs in the past." },
+  { id: '05', topic: 'Past Continuous', sub: 'I was doing...', desc: "Actions in progress in the past." },
+  { id: '06', topic: 'Future: Will & Going to', sub: 'Plans and predictions', desc: "Two ways to talk about tomorrow." },
+  { id: '07', topic: 'Present Perfect', sub: 'Have you ever...?', desc: "Connect the past with now." },
+  { id: '08', topic: 'Articles: a / an / the', sub: 'Tiny words, big rules', desc: "When to use each one." },
+  { id: '09', topic: 'Comparatives', sub: 'Bigger, faster, better', desc: "Compare two things." },
+  { id: '10', topic: 'Superlatives', sub: 'The biggest, the best', desc: "The top of the top." },
+  { id: '11', topic: 'Some / Any', sub: 'How much, how many', desc: "Countable and uncountable." },
+  { id: '12', topic: 'Can / Could / Would', sub: 'Ability and politeness', desc: "Modal verbs basics." },
+  { id: '13', topic: 'Prepositions', sub: 'In, on, at, to...', desc: "Time and place little words." },
+  { id: '14', topic: 'Question Words', sub: 'Who, what, where, why', desc: "Asking the right questions." },
+  { id: '15', topic: 'Final Challenge', sub: 'Boss level', desc: "Mix everything you've learned!" }
 ];
+
+let LESSONS = LESSON_CATALOG.map(l => ({ ...l, file: `english_lesson_${Number(l.id)}.html`, available: false }));
+
+async function discoverLessonsBySequence() {
+  const checks = LESSON_CATALOG.map(async lesson => {
+    const file = `english_lesson_${Number(lesson.id)}.html`;
+    try {
+      let res = await fetch(file, { method: 'HEAD', cache: 'no-store' });
+      if (res.status === 405 || res.status === 501) {
+        res = await fetch(file, { method: 'GET', cache: 'no-store' });
+      }
+      const exists = res.ok;
+      return { ...lesson, file, available: exists, desc: exists ? lesson.desc : `${lesson.desc} Coming soon!` };
+    } catch (e) {
+      return { ...lesson, file, available: false, desc: `${lesson.desc} Coming soon!` };
+    }
+  });
+  LESSONS = await Promise.all(checks);
+}
+
 
 /* ----------------- ACHIEVEMENTS ----------------- */
 const ACHIEVEMENTS = [
@@ -1112,7 +1125,10 @@ document.addEventListener('visibilitychange', () => { if (!document.hidden) relo
 // Initial
 maybeBreakStreak();
 saveData(DATA);
-render();
+(async () => {
+  await discoverLessonsBySequence();
+  render();
+})();
 </script>
 </body>
 </html>
