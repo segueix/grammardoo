@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>English Adventure · Home</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink: #ff3d7f;
+    --cyan: #14c2c2;
+    --yellow: #ffcf00;
+    --green: #2bd968;
+    --red: #ff4d4d;
+    --purple: #9b5de5;
+    --ink: #1a1a2e;
+    --cream: #fff5e1;
+    --paper: #ffffff;
+    --gray: #b8b8c8;
+    --shadow: 6px 6px 0 var(--ink);
+    --shadow-sm: 3px 3px 0 var(--ink);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+    overflow-x: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  body {
+    background-image:
+      radial-gradient(circle at 5% 10%, rgba(255,61,127,.12) 0, transparent 35%),
+      radial-gradient(circle at 95% 30%, rgba(20,194,194,.12) 0, transparent 35%),
+      radial-gradient(circle at 50% 90%, rgba(255,207,0,.10) 0, transparent 40%);
+    padding-bottom: 80px;
+  }
+
+  /* ============ HUD ============ */
+  .hud {
+    position: sticky; top: 0; z-index: 50;
+    background: var(--ink); color: var(--cream);
+    padding: 14px 16px;
+    border-bottom: 4px solid var(--yellow);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .hud .brand {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 700; font-size: 18px;
+    letter-spacing: .5px;
+    flex: 1;
+  }
+  .hud .brand span { color: var(--yellow); }
+  .hud-badge {
+    background: var(--yellow); color: var(--ink);
+    padding: 6px 10px; border-radius: 999px;
+    font-weight: 800; font-size: 13px;
+    border: 2px solid var(--ink);
+    display: flex; align-items: center; gap: 4px;
+  }
+  .hud-badge.streak { background: var(--pink); color: white; }
+  .icon-btn {
+    background: transparent; border: 2px solid var(--cream);
+    color: var(--cream); width: 36px; height: 36px;
+    border-radius: 10px; font-size: 18px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .icon-btn:active { transform: scale(.92); }
+
+  /* ============ STAGE ============ */
+  .stage {
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 20px 16px;
+  }
+
+  /* ============ HERO ============ */
+  .hero {
+    background: var(--paper);
+    border: 3px solid var(--ink);
+    border-radius: 24px;
+    padding: 22px 20px;
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute;
+    top: -40px; right: -40px;
+    width: 140px; height: 140px;
+    background: var(--yellow);
+    border-radius: 50%;
+    opacity: .35;
+    z-index: 0;
+  }
+  .hero::after {
+    content: ''; position: absolute;
+    bottom: -30px; left: -30px;
+    width: 100px; height: 100px;
+    background: var(--cyan);
+    border-radius: 50%;
+    opacity: .25;
+    z-index: 0;
+  }
+  .hero-content { position: relative; z-index: 1; }
+  .hero .greeting {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600; font-size: 14px;
+    color: var(--pink);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 4px;
+  }
+  .hero h1 {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 700;
+    font-size: 34px;
+    line-height: 1.05;
+    margin-bottom: 8px;
+  }
+  .hero h1 .wave {
+    display: inline-block;
+    animation: wave 2.5s ease-in-out infinite;
+    transform-origin: 70% 70%;
+  }
+  @keyframes wave {
+    0%, 60%, 100% { transform: rotate(0deg); }
+    10% { transform: rotate(14deg); }
+    20% { transform: rotate(-8deg); }
+    30% { transform: rotate(14deg); }
+    40% { transform: rotate(-4deg); }
+    50% { transform: rotate(10deg); }
+  }
+  .hero p {
+    font-size: 15px;
+    line-height: 1.4;
+    opacity: .85;
+  }
+  .name-input-row {
+    display: flex; gap: 8px; margin-top: 14px;
+  }
+  .name-input-row input {
+    flex: 1;
+    border: 3px solid var(--ink);
+    border-radius: 14px;
+    padding: 10px 14px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    background: white;
+    color: var(--ink);
+    outline: none;
+    box-shadow: var(--shadow-sm);
+  }
+  .name-input-row input:focus { border-color: var(--pink); }
+  .name-input-row button {
+    background: var(--pink); color: white;
+    border: 3px solid var(--ink);
+    border-radius: 14px;
+    padding: 0 16px;
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+  }
+  .name-input-row button:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--ink);
+  }
+
+  /* ============ STATS GRID ============ */
+  .stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+  .stat {
+    background: var(--paper);
+    border: 3px solid var(--ink);
+    border-radius: 18px;
+    padding: 14px;
+    box-shadow: var(--shadow-sm);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .stat.xp { background: var(--yellow); }
+  .stat.lessons { background: var(--cyan); color: white; }
+  .stat.streak { background: var(--pink); color: white; }
+  .stat.certs { background: var(--green); color: white; }
+  .stat .label {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: .85;
+    margin-bottom: 4px;
+  }
+  .stat .value {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 700;
+    font-size: 30px;
+    line-height: 1;
+  }
+  .stat .sub {
+    font-size: 11px;
+    opacity: .8;
+    margin-top: 2px;
+    font-weight: 700;
+  }
+  .stat .emoji {
+    position: absolute;
+    top: 6px; right: 8px;
+    font-size: 22px;
+    opacity: .55;
+  }
+
+  /* ============ SECTION TITLES ============ */
+  .section-title {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    margin: 8px 0 12px 4px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-title .badge {
+    font-size: 11px;
+    background: var(--ink); color: var(--cream);
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-weight: 600;
+    letter-spacing: .5px;
+  }
+
+  /* ============ ACHIEVEMENTS ============ */
+  .achievements {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 4px 4px 12px;
+    margin-bottom: 22px;
+    scrollbar-width: none;
+  }
+  .achievements::-webkit-scrollbar { display: none; }
+  .achv {
+    flex: 0 0 90px;
+    background: var(--paper);
+    border: 3px solid var(--ink);
+    border-radius: 18px;
+    padding: 12px 8px;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    transition: transform .15s;
+  }
+  .achv.unlocked { background: linear-gradient(135deg, var(--yellow), #ffe066); }
+  .achv.locked { opacity: .4; filter: grayscale(.6); }
+  .achv .achv-icon {
+    font-size: 32px;
+    display: block;
+    margin-bottom: 4px;
+    filter: drop-shadow(2px 2px 0 rgba(0,0,0,.15));
+  }
+  .achv .achv-name {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 11px;
+    line-height: 1.1;
+    color: var(--ink);
+  }
+  .achv.unlocked .achv-icon { animation: shine 2s ease-in-out infinite; }
+  @keyframes shine {
+    0%, 100% { transform: scale(1) rotate(0); }
+    50% { transform: scale(1.1) rotate(-5deg); }
+  }
+
+  /* ============ LESSONS MAP ============ */
+  .lessons {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .lesson-card {
+    background: var(--paper);
+    border: 3px solid var(--ink);
+    border-radius: 22px;
+    padding: 16px;
+    box-shadow: var(--shadow);
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    cursor: pointer;
+    transition: transform .12s, box-shadow .12s;
+    position: relative;
+    overflow: hidden;
+  }
+  .lesson-card:active {
+    transform: translate(3px, 3px);
+    box-shadow: 3px 3px 0 var(--ink);
+  }
+  .lesson-card.locked {
+    cursor: not-allowed;
+    opacity: .55;
+    background: #f0f0f0;
+  }
+  .lesson-card.locked:active {
+    transform: none;
+    box-shadow: var(--shadow);
+  }
+  .lesson-card.completed {
+    background: linear-gradient(135deg, #fff5e1 0%, #d8f7e3 100%);
+  }
+  .lesson-card.in-progress {
+    background: linear-gradient(135deg, #fff5e1 0%, #ffe4ee 100%);
+  }
+  .lesson-number {
+    flex: 0 0 64px;
+    width: 64px; height: 64px;
+    background: var(--ink); color: var(--cream);
+    border-radius: 18px;
+    border: 3px solid var(--ink);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 700;
+    font-size: 28px;
+    box-shadow: 3px 3px 0 var(--pink);
+  }
+  .lesson-card.completed .lesson-number {
+    background: var(--green); color: white;
+    box-shadow: 3px 3px 0 var(--ink);
+  }
+  .lesson-card.in-progress .lesson-number {
+    background: var(--pink); color: white;
+  }
+  .lesson-card.locked .lesson-number {
+    background: var(--gray); color: var(--ink);
+    box-shadow: 3px 3px 0 var(--gray);
+  }
+  .lesson-info { flex: 1; min-width: 0; }
+  .lesson-info .topic {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 700;
+    font-size: 17px;
+    line-height: 1.15;
+    margin-bottom: 3px;
+  }
+  .lesson-info .sub {
+    font-size: 12px;
+    opacity: .65;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .lesson-info .meta {
+    display: flex; gap: 6px; flex-wrap: wrap; align-items: center;
+  }
+  .pill {
+    background: white;
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 800;
+    display: inline-flex; align-items: center; gap: 3px;
+  }
+  .pill.xp { background: var(--yellow); }
+  .pill.score { background: var(--cyan); color: white; }
+  .pill.new { background: var(--pink); color: white; }
+  .pill.locked-pill { background: var(--gray); color: var(--ink); }
+  .lesson-stars {
+    display: flex; gap: 1px;
+    margin-top: 6px;
+    font-size: 14px;
+  }
+  .lesson-stars .s { color: #ddd; }
+  .lesson-stars .s.on { color: var(--yellow); filter: drop-shadow(1px 1px 0 var(--ink)); }
+  .lesson-action {
+    flex: 0 0 auto;
+    font-size: 24px;
+    opacity: .6;
+  }
+
+  /* ============ MODAL ============ */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(26,26,46,.7);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+    animation: fadeIn .25s;
+  }
+  .modal-overlay.show { display: flex; }
+  @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+  .modal {
+    background: var(--paper);
+    border: 3px solid var(--ink);
+    border-radius: 24px 24px 0 0;
+    width: 100%;
+    max-width: 560px;
+    padding: 22px 20px 32px;
+    animation: slideUp .35s cubic-bezier(.4,1.6,.6,1);
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+  @keyframes slideUp { from { transform: translateY(100%) } to { transform: translateY(0) } }
+  .modal-grip {
+    width: 50px; height: 5px;
+    background: var(--gray);
+    border-radius: 999px;
+    margin: 0 auto 16px;
+  }
+  .modal h2 {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 700;
+    font-size: 24px;
+    margin-bottom: 4px;
+  }
+  .modal .modal-sub {
+    font-size: 13px;
+    opacity: .7;
+    margin-bottom: 14px;
+    font-weight: 700;
+  }
+  .modal .modal-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin: 12px 0 18px;
+  }
+  .modal .modal-stats .ms {
+    background: var(--cream);
+    border: 2px solid var(--ink);
+    border-radius: 12px;
+    padding: 10px 6px;
+    text-align: center;
+  }
+  .modal .modal-stats .ms .l {
+    font-size: 10px; opacity: .7; font-weight: 800;
+    text-transform: uppercase; letter-spacing: .5px;
+  }
+  .modal .modal-stats .ms .v {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+  }
+  .modal-btn {
+    display: flex; align-items: center; justify-content: center;
+    background: var(--pink); color: white;
+    border: 3px solid var(--ink);
+    border-radius: 18px;
+    padding: 14px 20px;
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    text-decoration: none;
+    width: 100%;
+    margin-top: 8px;
+    gap: 8px;
+  }
+  .modal-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--ink);
+  }
+  .modal-btn.secondary { background: var(--cyan); }
+  .modal-btn.ghost {
+    background: transparent;
+    color: var(--ink);
+    border-color: var(--ink);
+    box-shadow: none;
+    font-size: 14px;
+    padding: 10px;
+  }
+  .modal-btn.danger { background: var(--red); }
+
+  /* ============ SETTINGS DRAWER ============ */
+  .settings-section {
+    background: var(--cream);
+    border-radius: 14px;
+    padding: 12px;
+    margin: 12px 0;
+    border: 2px dashed var(--ink);
+  }
+  .settings-section h4 {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 13px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: .7;
+  }
+
+  /* ============ TOAST ============ */
+  .toast {
+    position: fixed;
+    bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(120px);
+    background: var(--ink); color: var(--cream);
+    padding: 12px 18px;
+    border-radius: 14px;
+    font-weight: 700;
+    border: 2px solid var(--yellow);
+    z-index: 200;
+    transition: transform .35s cubic-bezier(.4,1.6,.6,1);
+    box-shadow: var(--shadow-sm);
+    font-size: 14px;
+    max-width: 90%;
+    text-align: center;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ============ EMPTY / FOOTER ============ */
+  .footer {
+    text-align: center;
+    margin-top: 30px;
+    font-size: 12px;
+    opacity: .5;
+    font-weight: 700;
+  }
+
+  @media (min-width: 600px) {
+    .hero h1 { font-size: 40px; }
+    .lesson-info .topic { font-size: 19px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ HUD ============ -->
+<div class="hud">
+  <div class="brand">🎮 ENGLISH <span>ADVENTURE</span></div>
+  <div class="hud-badge streak"><span id="hudStreak">0</span>🔥</div>
+  <div class="hud-badge">⭐ <span id="hudXP">0</span></div>
+  <button class="icon-btn" onclick="openSettings()" aria-label="Settings">⚙️</button>
+</div>
+
+<div class="stage">
+
+  <!-- ============ HERO ============ -->
+  <div class="hero">
+    <div class="hero-content">
+      <div class="greeting">Welcome back</div>
+      <h1>Hi <span id="heroName">Champion</span>! <span class="wave">👋</span></h1>
+      <p id="heroMsg">Ready for another English adventure today?</p>
+      <div class="name-input-row" id="nameInputRow" style="display:none;">
+        <input type="text" id="nameInput" placeholder="Type your name..." maxlength="20" autocomplete="off">
+        <button onclick="saveName()">SAVE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ STATS ============ -->
+  <div class="stats">
+    <div class="stat xp">
+      <span class="emoji">⭐</span>
+      <div class="label">Total XP</div>
+      <div class="value" id="statXP">0</div>
+      <div class="sub" id="statXPSub">Keep going!</div>
+    </div>
+    <div class="stat lessons">
+      <span class="emoji">📘</span>
+      <div class="label">Lessons</div>
+      <div class="value"><span id="statDone">0</span>/<span id="statTotal">15</span></div>
+      <div class="sub" id="statLessonsSub">0% complete</div>
+    </div>
+    <div class="stat streak">
+      <span class="emoji">🔥</span>
+      <div class="label">Streak</div>
+      <div class="value" id="statStreak">0</div>
+      <div class="sub" id="statStreakSub">days in a row</div>
+    </div>
+    <div class="stat certs">
+      <span class="emoji">🏆</span>
+      <div class="label">Trophies</div>
+      <div class="value" id="statCerts">0</div>
+      <div class="sub" id="statCertsSub">certificates earned</div>
+    </div>
+  </div>
+
+  <!-- ============ ACHIEVEMENTS ============ -->
+  <div class="section-title">🏅 Badges <span class="badge"><span id="achvDone">0</span>/<span id="achvTotal">7</span></span></div>
+  <div class="achievements" id="achievementsList"></div>
+
+  <!-- ============ LESSONS ============ -->
+  <div class="section-title">📚 Your Lessons</div>
+  <div class="lessons" id="lessonsList"></div>
+
+  <div class="footer">
+    Made with 💛 for your English journey · <span id="lastSync"></span>
+  </div>
+
+</div>
+
+<!-- ============ LESSON MODAL ============ -->
+<div class="modal-overlay" id="lessonModal" onclick="if(event.target===this) closeModal()">
+  <div class="modal">
+    <div class="modal-grip"></div>
+    <h2 id="mTitle">Lesson</h2>
+    <div class="modal-sub" id="mSub">Topic</div>
+    <p id="mDesc" style="font-size:14px; line-height:1.45;"></p>
+
+    <div class="modal-stats" id="mStatsRow" style="display:none;">
+      <div class="ms"><div class="l">Score</div><div class="v" id="mScore">0/5</div></div>
+      <div class="ms"><div class="l">XP</div><div class="v" id="mXP">0</div></div>
+      <div class="ms"><div class="l">Tries</div><div class="v" id="mTries">0</div></div>
+    </div>
+
+    <div id="mStarsRow" style="text-align:center; margin:12px 0; display:none;">
+      <div style="font-size:13px; opacity:.7; font-weight:800; text-transform:uppercase; letter-spacing:.5px; margin-bottom:4px;">Best Result</div>
+      <div style="font-size:32px;" id="mStars">⭐⭐⭐⭐⭐</div>
+    </div>
+
+    <a href="#" class="modal-btn" id="mPlayBtn" onclick="openLesson()">▶️ <span id="mPlayLabel">START LESSON</span></a>
+    <button class="modal-btn ghost" id="mMarkBtn" onclick="markAsDone()" style="display:none;">✓ Mark as completed manually</button>
+    <button class="modal-btn ghost" onclick="closeModal()">CLOSE</button>
+  </div>
+</div>
+
+<!-- ============ SETTINGS MODAL ============ -->
+<div class="modal-overlay" id="settingsModal" onclick="if(event.target===this) closeSettings()">
+  <div class="modal">
+    <div class="modal-grip"></div>
+    <h2>⚙️ Settings</h2>
+    <div class="modal-sub">Manage your adventure</div>
+
+    <div class="settings-section">
+      <h4>👤 Your name</h4>
+      <div class="name-input-row" style="margin-top:0;">
+        <input type="text" id="settingsName" placeholder="Your name..." maxlength="20" autocomplete="off">
+        <button onclick="saveNameFromSettings()">SAVE</button>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h4>💾 Backup &amp; Restore</h4>
+      <button class="modal-btn secondary" style="margin-top:0;" onclick="exportProgress()">⬇️ EXPORT PROGRESS</button>
+      <button class="modal-btn ghost" onclick="document.getElementById('importFile').click()">⬆️ IMPORT PROGRESS</button>
+      <input type="file" id="importFile" accept=".json" style="display:none;" onchange="importProgress(event)">
+    </div>
+
+    <div class="settings-section">
+      <h4>⚠️ Danger zone</h4>
+      <button class="modal-btn danger" style="margin-top:0;" onclick="confirmReset()">🗑️ RESET ALL PROGRESS</button>
+    </div>
+
+    <button class="modal-btn ghost" onclick="closeSettings()">CLOSE</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ========================================================================
+   ENGLISH ADVENTURE — DASHBOARD
+   Shared localStorage key: 'englishAdventure_v1'
+   ======================================================================== */
+const STORAGE_KEY = 'englishAdventure_v1';
+
+/* ----------------- LESSON CATALOGUE -----------------
+   Add new lessons here. The "file" must match the lesson HTML name.
+   Lessons unlock progressively: a lesson is locked until the previous one
+   is completed (or set requirePrevious:false to always unlock).
+*/
+const LESSONS = [
+  {
+    id: '01',
+    file: 'english_lesson_1.html',
+    topic: 'Present Continuous',
+    sub: 'What is happening right now',
+    desc: "Learn to talk about actions happening at this exact moment. Play 3 mini-games, pass the test, earn your certificate!",
+    available: true
+  },
+  { id: '02', topic: 'Present Simple', sub: 'Things you do every day', desc: "Routines, habits and facts. Coming soon!", available: false },
+  { id: '03', topic: 'Simple vs Continuous', sub: 'When to use which', desc: "Master the difference. Coming soon!", available: false },
+  { id: '04', topic: 'Past Simple', sub: 'Talking about yesterday', desc: "Regular and irregular verbs in the past.", available: false },
+  { id: '05', topic: 'Past Continuous', sub: 'I was doing...', desc: "Actions in progress in the past.", available: false },
+  { id: '06', topic: 'Future: Will & Going to', sub: 'Plans and predictions', desc: "Two ways to talk about tomorrow.", available: false },
+  { id: '07', topic: 'Present Perfect', sub: 'Have you ever...?', desc: "Connect the past with now.", available: false },
+  { id: '08', topic: 'Articles: a / an / the', sub: 'Tiny words, big rules', desc: "When to use each one.", available: false },
+  { id: '09', topic: 'Comparatives', sub: 'Bigger, faster, better', desc: "Compare two things.", available: false },
+  { id: '10', topic: 'Superlatives', sub: 'The biggest, the best', desc: "The top of the top.", available: false },
+  { id: '11', topic: 'Some / Any', sub: 'How much, how many', desc: "Countable and uncountable.", available: false },
+  { id: '12', topic: 'Can / Could / Would', sub: 'Ability and politeness', desc: "Modal verbs basics.", available: false },
+  { id: '13', topic: 'Prepositions', sub: 'In, on, at, to...', desc: "Time and place little words.", available: false },
+  { id: '14', topic: 'Question Words', sub: 'Who, what, where, why', desc: "Asking the right questions.", available: false },
+  { id: '15', topic: 'Final Challenge', sub: 'Boss level', desc: "Mix everything you've learned!", available: false }
+];
+
+/* ----------------- ACHIEVEMENTS ----------------- */
+const ACHIEVEMENTS = [
+  { id: 'first_lesson', name: 'First Steps', icon: '🌱', check: d => Object.values(d.lessons).some(l => l.completed) },
+  { id: 'perfect_score', name: 'Perfect!', icon: '💯', check: d => Object.values(d.lessons).some(l => l.bestScore === l.maxScore) },
+  { id: 'xp_100', name: 'XP Hunter', icon: '⚡', check: d => d.totalXP >= 100 },
+  { id: 'xp_500', name: 'XP Master', icon: '🔥', check: d => d.totalXP >= 500 },
+  { id: 'streak_3', name: '3-Day Streak', icon: '🎯', check: d => d.streak.best >= 3 },
+  { id: 'half', name: 'Halfway Hero', icon: '🚀', check: d => Object.values(d.lessons).filter(l => l.completed).length >= Math.ceil(LESSONS.length/2) },
+  { id: 'graduate', name: 'Graduate', icon: '🎓', check: d => Object.values(d.lessons).filter(l => l.completed).length >= LESSONS.length }
+];
+
+/* ----------------- STATE & STORAGE ----------------- */
+function blankData() {
+  return {
+    version: 1,
+    student: { name: '', createdAt: new Date().toISOString() },
+    totalXP: 0,
+    streak: { current: 0, best: 0, lastDate: null },
+    lessons: {},
+    achievements: []
+  };
+}
+
+function loadData() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return blankData();
+    const d = JSON.parse(raw);
+    // Migration / defaults safety
+    if (!d.lessons) d.lessons = {};
+    if (!d.student) d.student = { name: '', createdAt: new Date().toISOString() };
+    if (!d.streak) d.streak = { current: 0, best: 0, lastDate: null };
+    if (typeof d.totalXP !== 'number') d.totalXP = 0;
+    if (!d.achievements) d.achievements = [];
+    return d;
+  } catch (e) {
+    console.warn('Bad save data, starting fresh.', e);
+    return blankData();
+  }
+}
+
+function saveData(d) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+  } catch (e) {
+    showToast("⚠️ Couldn't save progress");
+  }
+}
+
+let DATA = loadData();
+let openedLessonId = null;
+
+/* ----------------- STREAK ----------------- */
+function todayStr() {
+  const t = new Date();
+  return t.getFullYear() + '-' + String(t.getMonth()+1).padStart(2,'0') + '-' + String(t.getDate()).padStart(2,'0');
+}
+function diffDays(a, b) {
+  const da = new Date(a + 'T00:00:00');
+  const db = new Date(b + 'T00:00:00');
+  return Math.round((db - da) / 86400000);
+}
+function touchStreak() {
+  // Called when a lesson is completed
+  const today = todayStr();
+  if (!DATA.streak.lastDate) {
+    DATA.streak.current = 1;
+  } else {
+    const d = diffDays(DATA.streak.lastDate, today);
+    if (d === 0) {
+      // same day, no change
+    } else if (d === 1) {
+      DATA.streak.current += 1;
+    } else {
+      DATA.streak.current = 1;
+    }
+  }
+  DATA.streak.lastDate = today;
+  if (DATA.streak.current > DATA.streak.best) DATA.streak.best = DATA.streak.current;
+}
+function maybeBreakStreak() {
+  // On load: if it's been more than 1 day since last activity, streak is paused (we don't reset best)
+  if (!DATA.streak.lastDate) return;
+  const d = diffDays(DATA.streak.lastDate, todayStr());
+  if (d > 1) DATA.streak.current = 0;
+}
+
+/* ----------------- ACHIEVEMENTS ----------------- */
+function evalAchievements() {
+  const newly = [];
+  ACHIEVEMENTS.forEach(a => {
+    if (!DATA.achievements.includes(a.id) && a.check(DATA)) {
+      DATA.achievements.push(a.id);
+      newly.push(a);
+    }
+  });
+  return newly;
+}
+
+/* ----------------- RENDER ----------------- */
+function render() {
+  // Hero
+  const name = (DATA.student.name || '').trim();
+  document.getElementById('heroName').textContent = name || 'Champion';
+  if (!name) {
+    document.getElementById('heroMsg').textContent = "What's your name? Let's set up your adventure!";
+    document.getElementById('nameInputRow').style.display = 'flex';
+  } else {
+    const done = Object.values(DATA.lessons).filter(l => l.completed).length;
+    if (done === 0) {
+      document.getElementById('heroMsg').textContent = "Ready to start Lesson 1? Tap the card below!";
+    } else if (done === LESSONS.length) {
+      document.getElementById('heroMsg').textContent = "🎉 You've completed every lesson! You're an English HERO!";
+    } else {
+      document.getElementById('heroMsg').textContent = `You've conquered ${done} lesson${done>1?'s':''}. Keep the streak alive!`;
+    }
+    document.getElementById('nameInputRow').style.display = 'none';
+  }
+
+  // Stats
+  document.getElementById('hudXP').textContent = DATA.totalXP;
+  document.getElementById('statXP').textContent = DATA.totalXP;
+  document.getElementById('statXPSub').textContent = DATA.totalXP === 0 ? 'Start to earn!' :
+    DATA.totalXP >= 500 ? 'Legendary!' :
+    DATA.totalXP >= 100 ? 'On fire!' : 'Keep going!';
+
+  const done = Object.values(DATA.lessons).filter(l => l.completed).length;
+  document.getElementById('statDone').textContent = done;
+  document.getElementById('statTotal').textContent = LESSONS.length;
+  const pct = Math.round((done / LESSONS.length) * 100);
+  document.getElementById('statLessonsSub').textContent = pct + '% complete';
+
+  document.getElementById('hudStreak').textContent = DATA.streak.current;
+  document.getElementById('statStreak').textContent = DATA.streak.current;
+  document.getElementById('statStreakSub').textContent = DATA.streak.current === 0 ? 'start today!' :
+    DATA.streak.current === 1 ? 'day in a row' : 'days in a row';
+
+  const certs = Object.values(DATA.lessons).filter(l => l.completed && (l.bestScore || 0) >= (l.maxScore || 5) * 0.8).length;
+  document.getElementById('statCerts').textContent = certs;
+  document.getElementById('statCertsSub').textContent = certs === 1 ? 'certificate earned' : 'certificates earned';
+
+  // Achievements
+  const list = document.getElementById('achievementsList');
+  list.innerHTML = '';
+  ACHIEVEMENTS.forEach(a => {
+    const unlocked = DATA.achievements.includes(a.id);
+    const el = document.createElement('div');
+    el.className = 'achv ' + (unlocked ? 'unlocked' : 'locked');
+    el.innerHTML = `
+      <span class="achv-icon">${unlocked ? a.icon : '🔒'}</span>
+      <div class="achv-name">${a.name}</div>
+    `;
+    list.appendChild(el);
+  });
+  document.getElementById('achvDone').textContent = DATA.achievements.length;
+  document.getElementById('achvTotal').textContent = ACHIEVEMENTS.length;
+
+  // Lessons
+  const ll = document.getElementById('lessonsList');
+  ll.innerHTML = '';
+  LESSONS.forEach((L, idx) => {
+    const saved = DATA.lessons[L.id];
+    const prevDone = idx === 0 ? true : !!(DATA.lessons[LESSONS[idx-1].id] && DATA.lessons[LESSONS[idx-1].id].completed);
+    const isAvailable = L.available && (idx === 0 || prevDone || (saved && saved.attempts));
+    const isCompleted = saved && saved.completed;
+    const isInProgress = saved && saved.attempts && !saved.completed;
+
+    let cls = 'lesson-card';
+    if (isCompleted) cls += ' completed';
+    else if (isInProgress) cls += ' in-progress';
+    else if (!L.available || !isAvailable) cls += ' locked';
+
+    const stars = isCompleted ? (saved.stars || 0) : 0;
+    const starsHTML = isCompleted
+      ? '<div class="lesson-stars">' + [1,2,3,4,5].map(i => `<span class="s ${i<=stars?'on':''}">★</span>`).join('') + '</div>'
+      : '';
+
+    let pills = '';
+    if (isCompleted) {
+      pills = `<span class="pill xp">⭐ ${saved.bestXP || 0} XP</span>`
+            + `<span class="pill score">${saved.bestScore || 0}/${saved.maxScore || 5}</span>`;
+    } else if (isInProgress) {
+      pills = `<span class="pill new">IN PROGRESS</span>`;
+    } else if (!L.available) {
+      pills = `<span class="pill locked-pill">🔒 SOON</span>`;
+    } else if (!isAvailable) {
+      pills = `<span class="pill locked-pill">🔒 LOCKED</span>`;
+    } else {
+      pills = `<span class="pill new">▶️ START</span>`;
+    }
+
+    const action = isCompleted ? '🔁' : (isAvailable && L.available ? '▶️' : '🔒');
+
+    const card = document.createElement('div');
+    card.className = cls;
+    card.innerHTML = `
+      <div class="lesson-number">${L.id}</div>
+      <div class="lesson-info">
+        <div class="topic">${L.topic}</div>
+        <div class="sub">${L.sub}</div>
+        <div class="meta">${pills}</div>
+        ${starsHTML}
+      </div>
+      <div class="lesson-action">${action}</div>
+    `;
+    if (L.available && isAvailable) {
+      card.addEventListener('click', () => showLessonModal(L.id));
+    } else if (!L.available) {
+      card.addEventListener('click', () => showToast("🔒 This lesson isn't ready yet — coming soon!"));
+    } else {
+      card.addEventListener('click', () => showToast("🔒 Finish the previous lesson first!"));
+    }
+    ll.appendChild(card);
+  });
+
+  // Footer last sync
+  const last = Object.values(DATA.lessons)
+    .map(l => l.completedAt).filter(Boolean).sort().pop();
+  if (last) {
+    const d = new Date(last);
+    document.getElementById('lastSync').textContent = 'Last activity: ' + d.toLocaleDateString();
+  } else {
+    document.getElementById('lastSync').textContent = 'No activity yet';
+  }
+}
+
+/* ----------------- LESSON MODAL ----------------- */
+function showLessonModal(id) {
+  openedLessonId = id;
+  const L = LESSONS.find(x => x.id === id);
+  if (!L) return;
+  const saved = DATA.lessons[id];
+
+  document.getElementById('mTitle').textContent = `Lesson ${id}: ${L.topic}`;
+  document.getElementById('mSub').textContent = L.sub;
+  document.getElementById('mDesc').textContent = L.desc;
+
+  if (saved) {
+    document.getElementById('mStatsRow').style.display = 'grid';
+    document.getElementById('mScore').textContent = (saved.bestScore || 0) + '/' + (saved.maxScore || 5);
+    document.getElementById('mXP').textContent = saved.bestXP || 0;
+    document.getElementById('mTries').textContent = saved.attempts || 1;
+    if (saved.completed) {
+      document.getElementById('mStarsRow').style.display = 'block';
+      const s = saved.stars || 0;
+      document.getElementById('mStars').textContent = '★★★★★'.split('').map((c,i) => i < s ? '⭐' : '☆').join('');
+      document.getElementById('mPlayLabel').textContent = 'PLAY AGAIN';
+    } else {
+      document.getElementById('mStarsRow').style.display = 'none';
+      document.getElementById('mPlayLabel').textContent = 'CONTINUE';
+    }
+  } else {
+    document.getElementById('mStatsRow').style.display = 'none';
+    document.getElementById('mStarsRow').style.display = 'none';
+    document.getElementById('mPlayLabel').textContent = 'START LESSON';
+  }
+
+  // Manual mark-as-done is a fallback in case the lesson HTML doesn't write to localStorage.
+  document.getElementById('mMarkBtn').style.display = (saved && saved.completed) ? 'none' : 'flex';
+
+  document.getElementById('lessonModal').classList.add('show');
+}
+function closeModal() {
+  document.getElementById('lessonModal').classList.remove('show');
+  openedLessonId = null;
+}
+function openLesson() {
+  if (!openedLessonId) return;
+  const L = LESSONS.find(x => x.id === openedLessonId);
+  if (!L || !L.file) return;
+  // Mark as "attempted" right now so it shows in-progress if they bail
+  if (!DATA.lessons[L.id]) {
+    DATA.lessons[L.id] = {
+      completed: false, attempts: 0, bestScore: 0, maxScore: 5, bestXP: 0, stars: 0, lastOpenAt: new Date().toISOString()
+    };
+  }
+  DATA.lessons[L.id].lastOpenAt = new Date().toISOString();
+  saveData(DATA);
+  window.location.href = L.file;
+}
+
+/* ----------------- MANUAL MARK COMPLETE (FALLBACK) ----------------- */
+function markAsDone() {
+  if (!openedLessonId) return;
+  const L = LESSONS.find(x => x.id === openedLessonId);
+  if (!L) return;
+  const prev = DATA.lessons[L.id] || { attempts: 0 };
+  DATA.lessons[L.id] = {
+    completed: true,
+    bestScore: Math.max(prev.bestScore || 0, 5),
+    maxScore: 5,
+    bestXP: Math.max(prev.bestXP || 0, 100),
+    stars: 5,
+    attempts: (prev.attempts || 0) + 1,
+    completedAt: new Date().toISOString(),
+    studentName: DATA.student.name || 'Champion',
+    manual: true
+  };
+  DATA.totalXP += 100; // bonus for marking manually
+  touchStreak();
+  const newly = evalAchievements();
+  saveData(DATA);
+  closeModal();
+  render();
+  showToast('✓ Marked as completed! +100 XP');
+  newly.forEach((a, i) => setTimeout(() => showToast(`🏅 Badge unlocked: ${a.name}`), 1200 + i * 1400));
+}
+
+/* ----------------- NAME ----------------- */
+function saveName() {
+  const v = document.getElementById('nameInput').value.trim();
+  if (!v) return;
+  DATA.student.name = v;
+  saveData(DATA);
+  render();
+  showToast(`👋 Hi ${v}!`);
+}
+function saveNameFromSettings() {
+  const v = document.getElementById('settingsName').value.trim();
+  if (!v) return;
+  DATA.student.name = v;
+  saveData(DATA);
+  closeSettings();
+  render();
+  showToast(`✓ Name updated`);
+}
+
+/* ----------------- SETTINGS ----------------- */
+function openSettings() {
+  document.getElementById('settingsName').value = DATA.student.name || '';
+  document.getElementById('settingsModal').classList.add('show');
+}
+function closeSettings() {
+  document.getElementById('settingsModal').classList.remove('show');
+}
+function confirmReset() {
+  if (confirm('Reset ALL progress? This cannot be undone.')) {
+    DATA = blankData();
+    saveData(DATA);
+    closeSettings();
+    render();
+    showToast('🗑️ Progress reset');
+  }
+}
+function exportProgress() {
+  const blob = new Blob([JSON.stringify(DATA, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `english-adventure-${todayStr()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('💾 Progress downloaded');
+}
+function importProgress(ev) {
+  const f = ev.target.files[0];
+  if (!f) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const incoming = JSON.parse(e.target.result);
+      if (typeof incoming !== 'object' || !incoming.lessons) throw new Error('bad format');
+      DATA = incoming;
+      saveData(DATA);
+      closeSettings();
+      render();
+      showToast('✓ Progress restored');
+    } catch (err) {
+      showToast("⚠️ Invalid file");
+    }
+  };
+  reader.readAsText(f);
+  ev.target.value = '';
+}
+
+/* ----------------- TOAST ----------------- */
+let toastTimer = null;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+/* ----------------- LIFECYCLE ----------------- */
+function reloadFromStorage() {
+  // Called when window regains focus or storage event fires — picks up lesson completion
+  const before = JSON.stringify(DATA);
+  DATA = loadData();
+  maybeBreakStreak();
+  const newlyCompleted = [];
+  // Check if lessons just completed (compare to previous state)
+  try {
+    const prev = JSON.parse(before);
+    LESSONS.forEach(L => {
+      const a = prev.lessons && prev.lessons[L.id];
+      const b = DATA.lessons[L.id];
+      if (b && b.completed && (!a || !a.completed)) newlyCompleted.push(L);
+    });
+  } catch (e) {}
+  if (newlyCompleted.length) {
+    touchStreak();
+    const newly = evalAchievements();
+    saveData(DATA);
+    setTimeout(() => showToast(`🎉 Lesson ${newlyCompleted[0].id} completed!`), 300);
+    newly.forEach((a, i) => setTimeout(() => showToast(`🏅 Badge unlocked: ${a.name}`), 1500 + i * 1400));
+  }
+  render();
+}
+
+window.addEventListener('focus', reloadFromStorage);
+window.addEventListener('storage', e => { if (e.key === STORAGE_KEY) reloadFromStorage(); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden) reloadFromStorage(); });
+
+// Initial
+maybeBreakStreak();
+saveData(DATA);
+render();
+</script>
+</body>
+</html>
